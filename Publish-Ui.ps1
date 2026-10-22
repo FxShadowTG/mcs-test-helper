@@ -262,6 +262,7 @@ function Read-UiConfig {
         Shift = $false
         Win = $false
         Key = "F8"
+        WorkRoot = $script:WorkRoot
         ProjectIds = @{}
         ProjectKeywords = @{}
     }
@@ -276,6 +277,7 @@ function Read-UiConfig {
         if ($null -ne $json.Shift) { $cfg.Shift = [bool]$json.Shift }
         if ($null -ne $json.Win) { $cfg.Win = [bool]$json.Win }
         if ($json.Key) { $cfg.Key = [string]$json.Key }
+        if ($json.WorkRoot) { $cfg.WorkRoot = [string]$json.WorkRoot }
         if ($json.ProjectKeywords) {
             foreach ($prop in $json.ProjectKeywords.PSObject.Properties) {
                 $value = ([string]$prop.Value).Trim()
@@ -326,6 +328,7 @@ function Save-UiConfig {
         Key = [string]$cmbKey.SelectedItem
         ProjectIds = $script:ProjectIds
         ProjectKeywords = $script:ProjectKeywords
+        WorkRoot = $script:WorkRoot
     }
     if ($lv.SelectedItems.Count -gt 0) {
         $cfg.MapName = [string]$lv.SelectedItems[0].Tag.Name
@@ -461,6 +464,7 @@ function Set-RunButtons([bool]$Running) {
     $btnRefresh.Enabled = -not $Running
     $btnProjectSettings.Enabled = -not $Running
     $btnAppSettings.Enabled = -not $Running
+    $btnWorkRoot.Enabled = -not $Running
     $lv.Enabled = -not $Running
 }
 
@@ -514,7 +518,9 @@ function Start-Run {
         (ConvertTo-CmdArg "-MapName"),
         (ConvertTo-CmdArg $name),
         (ConvertTo-CmdArg "-ProjectType"),
-        (ConvertTo-CmdArg $projectType)
+        (ConvertTo-CmdArg $projectType),
+        (ConvertTo-CmdArg "-WorkRoot"),
+        (ConvertTo-CmdArg $script:WorkRoot)
     ) -join " "
     if ($boundId) { $argText += " -BoundItemId " + (ConvertTo-CmdArg $boundId) }
     if ($publishKeyword) { $argText += " -PublishKeyword " + (ConvertTo-CmdArg $publishKeyword) }
@@ -647,6 +653,7 @@ function Sync-Progress {
 }
 
 $cfg = Read-UiConfig
+$script:WorkRoot = [string]$cfg.WorkRoot
 
 $form = New-Object OneClickForm
 $form.Text = "MCSTestHelper"
@@ -701,10 +708,22 @@ $btnAppSettings.Font = New-Object System.Drawing.Font("Segoe UI Symbol", 12)
 $appToolTip = New-Object System.Windows.Forms.ToolTip
 $appToolTip.SetToolTip($btnAppSettings, "快捷键设置")
 $header.Controls.Add($btnAppSettings)
+$btnWorkRoot = New-Object System.Windows.Forms.Button
+$btnWorkRoot.Text = "📂"
+$btnWorkRoot.Size = New-Object System.Drawing.Size(34, 34)
+$btnWorkRoot.Location = New-Object System.Drawing.Point(350, 12)
+$btnWorkRoot.FlatStyle = "Flat"
+$btnWorkRoot.FlatAppearance.BorderSize = 0
+$btnWorkRoot.BackColor = [System.Drawing.Color]::FromArgb(31, 31, 36)
+$btnWorkRoot.ForeColor = [System.Drawing.Color]::White
+$btnWorkRoot.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 12)
+$workRootToolTip = New-Object System.Windows.Forms.ToolTip
+$workRootToolTip.SetToolTip($btnWorkRoot, "工作目录设置")
+$header.Controls.Add($btnWorkRoot)
 $btnHelp = New-Object System.Windows.Forms.Button
 $btnHelp.Text = "?"
 $btnHelp.Size = New-Object System.Drawing.Size(34, 34)
-$btnHelp.Location = New-Object System.Drawing.Point(350, 12)
+$btnHelp.Location = New-Object System.Drawing.Point(390, 12)
 $btnHelp.FlatStyle = "Flat"
 $btnHelp.FlatAppearance.BorderSize = 0
 $btnHelp.BackColor = [System.Drawing.Color]::FromArgb(31, 31, 36)
@@ -1054,7 +1073,7 @@ $btnHelp.Add_Click({
     $helpRich.ReadOnly = $true
     $helpRich.BorderStyle = "None"
     $helpRich.BackColor = $helpForm.BackColor
-    $helpRich.Rtf = '{\rtf1\ansi\deff0{\fonttbl{\f0\fnil Microsoft YaHei UI;}{\f1\fnil Segoe UI Symbol;}}{\colortbl ;\red32\green150\blue96;\red196\green64\blue58;\red32\green32\blue32;}\viewkind4\uc1\pard\f0\fs28\b\cf3 我的世界MCStudio自测助手\b0\fs20\par\par 本软件用于自动保存、发布 MCStudio 项目并发起自测。\par\par 选中项目并绑定 46 开头的作品 ID 后，点击 \f1\b\cf1 \u9654? \f0\b0\cf3 开始任务；运行时点击 \f1\b\cf2 \u9632? \f0\b0\cf3 停止任务。\par\par 项目设置中的发布匹配关键词用于在发布作品列表里匹配实际作品名称。当启动器项目名和作品资源名不同时，填写能搜到该作品的关键词；留空时使用项目名。\par\par 点击键盘图标可设置快捷键。\par\par 作者：FxShadow\par}'
+    $helpRich.Rtf = '{\rtf1\ansi\deff0{\fonttbl{\f0\fnil Microsoft YaHei UI;}{\f1\fnil Segoe UI Symbol;}}{\colortbl ;\red32\green150\blue96;\red196\green64\blue58;\red32\green32\blue32;}\viewkind4\uc1\pard\f0\fs28\b\cf3 我的世界MCStudio自测助手\b0\fs20\par\par 本软件用于自动保存、发布 MCStudio 项目并发起自测。\par\par 选中项目并绑定 46 开头的作品 ID 后，点击 \f1\b\cf1 \u9654? \f0\b0\cf3 开始任务；运行时点击 \f1\b\cf2 \u9632? \f0\b0\cf3 停止任务。\par\par 项目设置中的发布匹配关键词用于在发布作品列表里匹配实际作品名称。当启动器项目名和作品资源名不同时，填写能搜到该作品的关键词；留空时使用项目名。\par\par 点击键盘图标可设置快捷键。\par\par 点击文件夹图标可选择 MCStudio 工作目录。\par\par 作者：FxShadow\par}'
     $helpForm.Controls.Add($helpRich)
     $helpClose = New-Object System.Windows.Forms.Button
     $helpClose.Text = "关闭"
@@ -1076,6 +1095,28 @@ $lv.Add_SelectedIndexChanged({
 })
 $btnProjectSettings.Add_Click({ Show-ProjectSettings })
 $btnAppSettings.Add_Click({ [void]$appSettings.ShowDialog($form) })
+$btnWorkRoot.Add_Click({
+    $folderDialog = New-Object System.Windows.Forms.FolderBrowserDialog
+    $folderDialog.Description = "选择 MCStudio 工作目录（包含账号文件夹的目录）"
+    $folderDialog.ShowNewFolderButton = $false
+    if (Test-Path -LiteralPath $script:WorkRoot -PathType Container) { $folderDialog.SelectedPath = $script:WorkRoot }
+    if ($folderDialog.ShowDialog($form) -eq [System.Windows.Forms.DialogResult]::OK -and $folderDialog.SelectedPath) {
+        $prefer = ""
+        $preferType = "map"
+        if ($lv.SelectedItems.Count -gt 0) {
+            $prefer = [string]$lv.SelectedItems[0].Tag.Name
+            $preferType = [string]$lv.SelectedItems[0].SubItems[1].Text
+        }
+        $script:WorkRoot = [System.IO.Path]::GetFullPath($folderDialog.SelectedPath)
+        $workRootToolTip.SetToolTip($btnWorkRoot, "工作目录设置`r`n$script:WorkRoot")
+        Save-UiConfig
+        Update-ProjectList $prefer $preferType
+        Set-PhaseLabel 0 "工作目录已更新" $false
+        $toastMessage.Text = "工作目录已保存"
+        Show-RefreshToast
+    }
+    $folderDialog.Dispose()
+})
 $lv.Add_DoubleClick({ Start-Run })
 $form.Add_HotkeyPressed({ Start-Run })
 $form.Add_FormClosing({ Save-UiConfig })

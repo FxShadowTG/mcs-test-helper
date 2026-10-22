@@ -8,7 +8,7 @@
 2. 将仓库目录放在本机固定位置，双击 `Start-Ui.vbs` 启动图形界面。
 3. 首次运行后，在项目设置中为项目绑定以 `46` 开头的作品 ID，再开始任务。
 
-程序默认读取 `D:\MCStudioDownload\work` 下的项目。若你的 MCStudio 工作目录不同，请在 `Publish-Ui.ps1` 和 `Publish-SelfTest.ps1` 中修改默认 `WorkRoot` 路径。
+程序默认读取 `D:\MCStudioDownload\work` 下的项目。若目录不同，点击窗口顶部的文件夹图标，在快捷键和使用说明按钮之间选择 MCStudio 工作目录；设置会自动保存。
 
 需要 Windows PowerShell 5.1（系统自带）、Windows Forms 与 UI Automation。运行时配置和日志保存在程序目录中，但不会提交到 Git：`ui-config.json`、`last-run.log`、`run-progress.txt`。
 
