@@ -679,7 +679,7 @@ $script:NotifyIcon.Add_DoubleClick({
 $header = New-Object System.Windows.Forms.Panel
 $header.Dock = "Top"
 $header.Height = 60
-$header.BackColor = [System.Drawing.Color]::FromArgb(18, 19, 20)
+$header.BackColor = [System.Drawing.Color]::FromArgb(31, 31, 36)
 $form.Controls.Add($header)
 
 $lblTitle = New-Object System.Windows.Forms.Label
@@ -695,7 +695,7 @@ $btnAppSettings.Size = New-Object System.Drawing.Size(34, 34)
 $btnAppSettings.Location = New-Object System.Drawing.Point(310, 12)
 $btnAppSettings.FlatStyle = "Flat"
 $btnAppSettings.FlatAppearance.BorderSize = 0
-$btnAppSettings.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
+$btnAppSettings.BackColor = [System.Drawing.Color]::FromArgb(31, 31, 36)
 $btnAppSettings.ForeColor = [System.Drawing.Color]::White
 $btnAppSettings.Font = New-Object System.Drawing.Font("Segoe UI Symbol", 12)
 $appToolTip = New-Object System.Windows.Forms.ToolTip
@@ -707,7 +707,7 @@ $btnHelp.Size = New-Object System.Drawing.Size(34, 34)
 $btnHelp.Location = New-Object System.Drawing.Point(350, 12)
 $btnHelp.FlatStyle = "Flat"
 $btnHelp.FlatAppearance.BorderSize = 0
-$btnHelp.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
+$btnHelp.BackColor = [System.Drawing.Color]::FromArgb(31, 31, 36)
 $btnHelp.ForeColor = [System.Drawing.Color]::White
 $btnHelp.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
 $header.Controls.Add($btnHelp)
