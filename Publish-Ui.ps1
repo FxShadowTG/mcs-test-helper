@@ -747,7 +747,7 @@ $top.BackColor = [System.Drawing.Color]::White
 $body.Controls.Add($top)
 
 $lblPick = New-Object System.Windows.Forms.Label
-$lblPick.Text = "项目"
+$lblPick.Text = "开发动态"
 $lblPick.AutoSize = $true
 $lblPick.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9, [System.Drawing.FontStyle]::Bold)
 $lblPick.ForeColor = [System.Drawing.Color]::FromArgb(32, 32, 32)
