@@ -709,16 +709,17 @@ $appToolTip = New-Object System.Windows.Forms.ToolTip
 $appToolTip.SetToolTip($btnAppSettings, "快捷键设置")
 $header.Controls.Add($btnAppSettings)
 $btnWorkRoot = New-Object System.Windows.Forms.Button
-$btnWorkRoot.Text = "📂"
+$btnWorkRoot.Text = "⚙"
 $btnWorkRoot.Size = New-Object System.Drawing.Size(34, 34)
 $btnWorkRoot.Location = New-Object System.Drawing.Point(350, 12)
 $btnWorkRoot.FlatStyle = "Flat"
 $btnWorkRoot.FlatAppearance.BorderSize = 0
 $btnWorkRoot.BackColor = [System.Drawing.Color]::FromArgb(31, 31, 36)
 $btnWorkRoot.ForeColor = [System.Drawing.Color]::White
-$btnWorkRoot.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 12)
+$btnWorkRoot.Font = New-Object System.Drawing.Font("Segoe UI Symbol", 12)
+$btnWorkRoot.AccessibleName = "设置"
 $workRootToolTip = New-Object System.Windows.Forms.ToolTip
-$workRootToolTip.SetToolTip($btnWorkRoot, "工作目录设置")
+$workRootToolTip.SetToolTip($btnWorkRoot, "设置")
 $header.Controls.Add($btnWorkRoot)
 $btnHelp = New-Object System.Windows.Forms.Button
 $btnHelp.Text = "?"
@@ -1073,7 +1074,7 @@ $btnHelp.Add_Click({
     $helpRich.ReadOnly = $true
     $helpRich.BorderStyle = "None"
     $helpRich.BackColor = $helpForm.BackColor
-    $helpRich.Rtf = '{\rtf1\ansi\deff0{\fonttbl{\f0\fnil Microsoft YaHei UI;}{\f1\fnil Segoe UI Symbol;}}{\colortbl ;\red32\green150\blue96;\red196\green64\blue58;\red32\green32\blue32;}\viewkind4\uc1\pard\f0\fs28\b\cf3 我的世界MCStudio自测助手\b0\fs20\par\par 本软件用于自动保存、发布 MCStudio 项目并发起自测。\par\par 选中项目并绑定 46 开头的作品 ID 后，点击 \f1\b\cf1 \u9654? \f0\b0\cf3 开始任务；运行时点击 \f1\b\cf2 \u9632? \f0\b0\cf3 停止任务。\par\par 项目设置中的发布匹配关键词用于在发布作品列表里匹配实际作品名称。当启动器项目名和作品资源名不同时，填写能搜到该作品的关键词；留空时使用项目名。\par\par 点击键盘图标可设置快捷键。\par\par 点击文件夹图标可选择 MCStudio 工作目录。\par\par 作者：FxShadow\par}'
+    $helpRich.Rtf = '{\rtf1\ansi\deff0{\fonttbl{\f0\fnil Microsoft YaHei UI;}{\f1\fnil Segoe UI Symbol;}}{\colortbl ;\red32\green150\blue96;\red196\green64\blue58;\red32\green32\blue32;}\viewkind4\uc1\pard\f0\fs28\b\cf3 我的世界MCStudio自测助手\b0\fs20\par\par 本软件用于自动保存、发布 MCStudio 项目并发起自测。\par\par 选中项目并绑定 46 开头的作品 ID 后，点击 \f1\b\cf1 \u9654? \f0\b0\cf3 开始任务；运行时点击 \f1\b\cf2 \u9632? \f0\b0\cf3 停止任务。\par\par 项目设置中的发布匹配关键词用于在发布作品列表里匹配实际作品名称。当启动器项目名和作品资源名不同时，填写能搜到该作品的关键词；留空时使用项目名。\par\par 点击键盘图标可设置快捷键。\par\par 点击设置图标可配置 MCStudio 工作目录。\par\par 作者：FxShadow\par}'
     $helpForm.Controls.Add($helpRich)
     $helpClose = New-Object System.Windows.Forms.Button
     $helpClose.Text = "关闭"
@@ -1096,26 +1097,94 @@ $lv.Add_SelectedIndexChanged({
 $btnProjectSettings.Add_Click({ Show-ProjectSettings })
 $btnAppSettings.Add_Click({ [void]$appSettings.ShowDialog($form) })
 $btnWorkRoot.Add_Click({
-    $folderDialog = New-Object System.Windows.Forms.FolderBrowserDialog
-    $folderDialog.Description = "选择 MCStudio 工作目录（包含账号文件夹的目录）"
-    $folderDialog.ShowNewFolderButton = $false
-    if (Test-Path -LiteralPath $script:WorkRoot -PathType Container) { $folderDialog.SelectedPath = $script:WorkRoot }
-    if ($folderDialog.ShowDialog($form) -eq [System.Windows.Forms.DialogResult]::OK -and $folderDialog.SelectedPath) {
+    $workSettings = New-Object System.Windows.Forms.Form
+    $workSettings.Text = "设置"
+    $workSettings.StartPosition = "CenterParent"
+    $workSettings.FormBorderStyle = "FixedDialog"
+    $workSettings.MaximizeBox = $false
+    $workSettings.MinimizeBox = $false
+    $workSettings.ShowInTaskbar = $false
+    $workSettings.ClientSize = New-Object System.Drawing.Size(600, 170)
+    $workSettings.BackColor = [System.Drawing.Color]::White
+    $workSettings.ForeColor = [System.Drawing.Color]::FromArgb(32, 32, 32)
+    $workSettings.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
+    $workSettings.Add_Shown({ Set-DarkTitleBar $workSettings })
+
+    $pathLabel = New-Object System.Windows.Forms.Label
+    $pathLabel.Text = "MCStudio 工作目录"
+    $pathLabel.Location = New-Object System.Drawing.Point(20, 18)
+    $pathLabel.Size = New-Object System.Drawing.Size(250, 24)
+    $workSettings.Controls.Add($pathLabel)
+
+    $pathBox = New-Object System.Windows.Forms.TextBox
+    $pathBox.Text = $script:WorkRoot
+    $pathBox.Location = New-Object System.Drawing.Point(20, 48)
+    $pathBox.Size = New-Object System.Drawing.Size(450, 28)
+    $pathBox.BackColor = [System.Drawing.Color]::White
+    $pathBox.ForeColor = [System.Drawing.Color]::FromArgb(32, 32, 32)
+    $workSettings.Controls.Add($pathBox)
+
+    $browsePath = New-Object System.Windows.Forms.Button
+    $browsePath.Text = "浏览..."
+    $browsePath.Location = New-Object System.Drawing.Point(480, 46)
+    $browsePath.Size = New-Object System.Drawing.Size(100, 30)
+    $browsePath.Add_Click({
+        $folderDialog = New-Object System.Windows.Forms.FolderBrowserDialog
+        $folderDialog.Description = "选择 MCStudio 工作目录（包含账号文件夹的目录）"
+        $folderDialog.ShowNewFolderButton = $false
+        if (Test-Path -LiteralPath $pathBox.Text -PathType Container) { $folderDialog.SelectedPath = $pathBox.Text }
+        if ($folderDialog.ShowDialog($workSettings) -eq [System.Windows.Forms.DialogResult]::OK) { $pathBox.Text = $folderDialog.SelectedPath }
+        $folderDialog.Dispose()
+    })
+    $workSettings.Controls.Add($browsePath)
+
+    $pathHint = New-Object System.Windows.Forms.Label
+    $pathHint.Text = "目录下应包含账号文件夹及其 Cpp\Map 或 Cpp\AddOn 项目。"
+    $pathHint.Location = New-Object System.Drawing.Point(20, 82)
+    $pathHint.Size = New-Object System.Drawing.Size(560, 22)
+    $pathHint.ForeColor = [System.Drawing.Color]::FromArgb(100, 100, 100)
+    $workSettings.Controls.Add($pathHint)
+
+    $saveWorkSettings = New-Object System.Windows.Forms.Button
+    $saveWorkSettings.Text = "保存"
+    $saveWorkSettings.Location = New-Object System.Drawing.Point(390, 120)
+    $saveWorkSettings.Size = New-Object System.Drawing.Size(88, 30)
+    $saveWorkSettings.BackColor = [System.Drawing.Color]::FromArgb(47, 117, 199)
+    $saveWorkSettings.ForeColor = [System.Drawing.Color]::White
+    $saveWorkSettings.Add_Click({
+        $selectedPath = $pathBox.Text.Trim()
+        if (-not (Test-Path -LiteralPath $selectedPath -PathType Container)) {
+            [void][System.Windows.Forms.MessageBox]::Show("请选择一个已存在的工作目录。", "路径无效", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            return
+        }
         $prefer = ""
         $preferType = "map"
         if ($lv.SelectedItems.Count -gt 0) {
             $prefer = [string]$lv.SelectedItems[0].Tag.Name
             $preferType = [string]$lv.SelectedItems[0].SubItems[1].Text
         }
-        $script:WorkRoot = [System.IO.Path]::GetFullPath($folderDialog.SelectedPath)
-        $workRootToolTip.SetToolTip($btnWorkRoot, "工作目录设置`r`n$script:WorkRoot")
+        $script:WorkRoot = [System.IO.Path]::GetFullPath($selectedPath)
+        $workRootToolTip.SetToolTip($btnWorkRoot, "设置`r`n工作目录：$script:WorkRoot")
         Save-UiConfig
         Update-ProjectList $prefer $preferType
         Set-PhaseLabel 0 "工作目录已更新" $false
-        $toastMessage.Text = "工作目录已保存"
+        $toastMessage.Text = "设置已保存"
         Show-RefreshToast
-    }
-    $folderDialog.Dispose()
+        $workSettings.DialogResult = [System.Windows.Forms.DialogResult]::OK
+        $workSettings.Close()
+    })
+    $workSettings.Controls.Add($saveWorkSettings)
+
+    $cancelWorkSettings = New-Object System.Windows.Forms.Button
+    $cancelWorkSettings.Text = "取消"
+    $cancelWorkSettings.Location = New-Object System.Drawing.Point(490, 120)
+    $cancelWorkSettings.Size = New-Object System.Drawing.Size(88, 30)
+    $cancelWorkSettings.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+    $workSettings.Controls.Add($cancelWorkSettings)
+    $workSettings.AcceptButton = $saveWorkSettings
+    $workSettings.CancelButton = $cancelWorkSettings
+    [void]$workSettings.ShowDialog($form)
+    $workSettings.Dispose()
 })
 $lv.Add_DoubleClick({ Start-Run })
 $form.Add_HotkeyPressed({ Start-Run })
