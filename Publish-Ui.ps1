@@ -33,8 +33,10 @@ public class UiDpi {
   [DllImport("dwmapi.dll")] public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int valueSize);
   [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
   [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, string lParam);
+  [DllImport("shell32.dll", CharSet=CharSet.Unicode)] public static extern int SetCurrentProcessExplicitAppUserModelID(string AppID);
 }
 "@
+[void][UiDpi]::SetCurrentProcessExplicitAppUserModelID("FxShadow.MCSTestHelper")
 [void][UiDpi]::SetProcessDPIAware()
 function Set-DarkTitleBar([System.Windows.Forms.Form]$Window) {
     try {
