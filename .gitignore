@@ -1,0 +1,6 @@
+# Local runtime state and user-specific settings
+ui-config.json
+last-run.log
+run-progress.txt
+*.tmp
+*.bak
