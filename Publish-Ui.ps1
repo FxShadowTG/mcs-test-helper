@@ -117,7 +117,7 @@ function Show-ProjectSettings {
     $settings.MinimizeBox = $false
     $settings.ShowInTaskbar = $false
     $settings.ClientSize = New-Object System.Drawing.Size(460, 280)
-    $settings.BackColor = [System.Drawing.Color]::FromArgb(31, 36, 43)
+    $settings.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $settings.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
     $settings.Add_Shown({ Set-DarkTitleBar $settings })
     $settings.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
@@ -136,13 +136,13 @@ function Show-ProjectSettings {
     $idPanel.Location = New-Object System.Drawing.Point(18, 64)
     $idPanel.Size = New-Object System.Drawing.Size(424, 34)
     $idPanel.BorderStyle = "FixedSingle"
-    $idPanel.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+    $idPanel.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $settings.Controls.Add($idPanel)
     $idBox = New-Object System.Windows.Forms.TextBox
     $idBox.Location = New-Object System.Drawing.Point(5, 4)
     $idBox.Size = New-Object System.Drawing.Size(380, 20)
     $idBox.BorderStyle = "None"
-    $idBox.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+    $idBox.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $idBox.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
     $idBox.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
     $idBox.Text = Get-SelectedBoundId
@@ -153,7 +153,7 @@ function Show-ProjectSettings {
     $clearId.Size = New-Object System.Drawing.Size(28, 26)
     $clearId.FlatStyle = "Flat"
     $clearId.FlatAppearance.BorderSize = 0
-    $clearId.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+    $clearId.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $clearId.ForeColor = [System.Drawing.Color]::FromArgb(174, 183, 194)
     $clearId.Font = New-Object System.Drawing.Font("Segoe UI Symbol", 11)
     $clearId.Add_Click({ $idBox.Clear(); $idBox.Focus() })
@@ -165,13 +165,13 @@ function Show-ProjectSettings {
     $keywordPanel.Location = New-Object System.Drawing.Point(18, 124)
     $keywordPanel.Size = New-Object System.Drawing.Size(424, 34)
     $keywordPanel.BorderStyle = "FixedSingle"
-    $keywordPanel.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+    $keywordPanel.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $settings.Controls.Add($keywordPanel)
     $keywordBox = New-Object System.Windows.Forms.TextBox
     $keywordBox.Location = New-Object System.Drawing.Point(5, 4)
     $keywordBox.Size = New-Object System.Drawing.Size(380, 20)
     $keywordBox.BorderStyle = "None"
-    $keywordBox.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+    $keywordBox.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $keywordBox.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
     $keywordBox.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
     $keywordBox.Text = Get-SelectedPublishKeyword
@@ -182,7 +182,7 @@ function Show-ProjectSettings {
     $clearKeyword.Size = New-Object System.Drawing.Size(28, 26)
     $clearKeyword.FlatStyle = "Flat"
     $clearKeyword.FlatAppearance.BorderSize = 0
-    $clearKeyword.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+    $clearKeyword.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $clearKeyword.ForeColor = [System.Drawing.Color]::FromArgb(174, 183, 194)
     $clearKeyword.Font = New-Object System.Drawing.Font("Segoe UI Symbol", 11)
     $clearKeyword.Add_Click({ $keywordBox.Clear(); $keywordBox.Focus() })
@@ -221,7 +221,7 @@ function Show-ProjectSettings {
     $cancel.Size = New-Object System.Drawing.Size(82, 30)
     $cancel.FlatStyle = "Flat"
     $cancel.FlatAppearance.BorderSize = 0
-    $cancel.BackColor = [System.Drawing.Color]::FromArgb(55, 62, 72)
+    $cancel.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $cancel.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
     $cancel.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
     $settings.Controls.Add($cancel)
@@ -653,7 +653,7 @@ $form.Text = "MCSTestHelper"
 $form.StartPosition = "CenterScreen"
 $form.Size = New-Object System.Drawing.Size(1180, 700)
 $form.MinimumSize = New-Object System.Drawing.Size(1120, 620)
-$form.BackColor = [System.Drawing.Color]::FromArgb(24, 27, 32)
+$form.BackColor = [System.Drawing.Color]::FromArgb(18, 19, 20)
 $form.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
 $form.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
 $script:AppIcon = $null
@@ -679,7 +679,7 @@ $script:NotifyIcon.Add_DoubleClick({
 $header = New-Object System.Windows.Forms.Panel
 $header.Dock = "Top"
 $header.Height = 60
-$header.BackColor = [System.Drawing.Color]::FromArgb(27, 32, 40)
+$header.BackColor = [System.Drawing.Color]::FromArgb(18, 19, 20)
 $form.Controls.Add($header)
 
 $lblTitle = New-Object System.Windows.Forms.Label
@@ -695,7 +695,7 @@ $btnAppSettings.Size = New-Object System.Drawing.Size(34, 34)
 $btnAppSettings.Location = New-Object System.Drawing.Point(310, 12)
 $btnAppSettings.FlatStyle = "Flat"
 $btnAppSettings.FlatAppearance.BorderSize = 0
-$btnAppSettings.BackColor = [System.Drawing.Color]::FromArgb(44, 52, 64)
+$btnAppSettings.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $btnAppSettings.ForeColor = [System.Drawing.Color]::White
 $btnAppSettings.Font = New-Object System.Drawing.Font("Segoe UI Symbol", 12)
 $appToolTip = New-Object System.Windows.Forms.ToolTip
@@ -707,7 +707,7 @@ $btnHelp.Size = New-Object System.Drawing.Size(34, 34)
 $btnHelp.Location = New-Object System.Drawing.Point(350, 12)
 $btnHelp.FlatStyle = "Flat"
 $btnHelp.FlatAppearance.BorderSize = 0
-$btnHelp.BackColor = [System.Drawing.Color]::FromArgb(44, 52, 64)
+$btnHelp.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $btnHelp.ForeColor = [System.Drawing.Color]::White
 $btnHelp.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
 $header.Controls.Add($btnHelp)
@@ -716,14 +716,14 @@ $header.Controls.Add($btnHelp)
 $body = New-Object System.Windows.Forms.Panel
 $body.Dock = "Fill"
 $body.Padding = New-Object System.Windows.Forms.Padding(16, 12, 16, 12)
-$body.BackColor = [System.Drawing.Color]::FromArgb(24, 27, 32)
+$body.BackColor = [System.Drawing.Color]::FromArgb(18, 19, 20)
 $form.Controls.Add($body)
 $body.BringToFront()
 
 $top = New-Object System.Windows.Forms.Panel
 $top.Dock = "Top"
 $top.Height = 220
-$top.BackColor = [System.Drawing.Color]::FromArgb(24, 27, 32)
+$top.BackColor = [System.Drawing.Color]::FromArgb(18, 19, 20)
 $body.Controls.Add($top)
 
 $lblPick = New-Object System.Windows.Forms.Label
@@ -740,7 +740,7 @@ $btnRefresh.Text = "↻"
 $btnRefresh.Size = New-Object System.Drawing.Size(32, 26)
 $btnRefresh.Anchor = "Top,Right"
 $btnRefresh.FlatStyle = "Flat"
-$btnRefresh.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+$btnRefresh.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $btnRefresh.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
 $btnRefresh.Font = New-Object System.Drawing.Font("Segoe UI Symbol", 12)
 $btnRefresh.FlatAppearance.BorderColor = [System.Drawing.Color]::FromArgb(66, 75, 87)
@@ -753,7 +753,7 @@ $btnProjectSettings.Size = New-Object System.Drawing.Size(32, 26)
 $btnProjectSettings.Visible = $false
 $btnProjectSettings.Anchor = "Top,Right"
 $btnProjectSettings.FlatStyle = "Flat"
-$btnProjectSettings.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+$btnProjectSettings.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $btnProjectSettings.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
 $btnProjectSettings.FlatAppearance.BorderColor = [System.Drawing.Color]::FromArgb(66, 75, 87)
 $btnProjectSettings.Font = New-Object System.Drawing.Font("Segoe UI Symbol", 10)
@@ -769,7 +769,7 @@ $lv.MultiSelect = $false
 $lv.GridLines = $false
 $lv.BorderStyle = "FixedSingle"
 $lv.OwnerDraw = $true
-$lv.BackColor = [System.Drawing.Color]::FromArgb(31, 36, 43)
+$lv.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $lv.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
 $lv.HeaderStyle = "Nonclickable"
 $lv.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
@@ -784,7 +784,7 @@ $lv.Size = New-Object System.Drawing.Size(670, 125)
 $top.Controls.Add($lv)
 $lv.Add_DrawColumnHeader({
     param($sender, $e)
-    $brush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(43, 49, 58))
+    $brush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(30, 31, 32))
     $e.Graphics.FillRectangle($brush, $e.Bounds)
     $brush.Dispose()
     $rect = $e.Bounds
@@ -803,10 +803,10 @@ $lv.Add_DrawSubItem({
         $back = [System.Drawing.Color]::FromArgb(43, 91, 133)
         $fore = [System.Drawing.Color]::White
     } elseif (($e.ItemIndex % 2) -eq 0) {
-        $back = [System.Drawing.Color]::FromArgb(31, 36, 43)
+        $back = [System.Drawing.Color]::FromArgb(18, 19, 20)
         $fore = [System.Drawing.Color]::FromArgb(226, 231, 238)
     } else {
-        $back = [System.Drawing.Color]::FromArgb(37, 43, 51)
+        $back = [System.Drawing.Color]::FromArgb(18, 19, 20)
         $fore = [System.Drawing.Color]::FromArgb(226, 231, 238)
     }
     $brush = New-Object System.Drawing.SolidBrush($back)
@@ -828,7 +828,7 @@ $appSettings.MinimizeBox = $false
 $appSettings.ShowInTaskbar = $false
 $appSettings.ClientSize = New-Object System.Drawing.Size(470, 220)
 $appSettings.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
-$appSettings.BackColor = [System.Drawing.Color]::FromArgb(31, 36, 43)
+$appSettings.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $appSettings.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
 $appSettings.Add_Shown({ Set-DarkTitleBar $appSettings })
 
@@ -879,7 +879,7 @@ $appSettings.Controls.Add($chkWin)
 
 $cmbKey = New-Object System.Windows.Forms.ComboBox
 $cmbKey.DropDownStyle = "DropDownList"
-$cmbKey.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+$cmbKey.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $cmbKey.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
 $cmbKey.Location = New-Object System.Drawing.Point(300, 50)
 $cmbKey.Size = New-Object System.Drawing.Size(110, 28)
@@ -917,7 +917,7 @@ $btnSettingsClose.Location = New-Object System.Drawing.Point(365, 175)
 $btnSettingsClose.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
 $btnSettingsClose.FlatStyle = "Flat"
 $btnSettingsClose.FlatAppearance.BorderSize = 0
-$btnSettingsClose.BackColor = [System.Drawing.Color]::FromArgb(55, 62, 72)
+$btnSettingsClose.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $btnSettingsClose.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
 $appSettings.Controls.Add($btnSettingsClose)
 $appSettings.CancelButton = $btnSettingsClose
@@ -940,7 +940,7 @@ $bar.Size = New-Object System.Drawing.Size(240, 22)
 $bar.Anchor = "Top,Left"
 $bar.Minimum = 0
 $bar.Maximum = 100
-$bar.BackColor = [System.Drawing.Color]::FromArgb(43, 49, 58)
+$bar.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $bar.ForeColor = [System.Drawing.Color]::FromArgb(34, 160, 107)
 $top.Controls.Add($bar)
 
@@ -949,7 +949,7 @@ $lblPhase.AutoSize = $false
 $lblPhase.Dock = "Top"
 $lblPhase.Height = 28
 $lblPhase.TextAlign = "MiddleLeft"
-$lblPhase.BackColor = [System.Drawing.Color]::FromArgb(24, 27, 32)
+$lblPhase.BackColor = [System.Drawing.Color]::FromArgb(18, 19, 20)
 $lblPhase.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9, [System.Drawing.FontStyle]::Bold)
 $lblPhase.Text = "就绪。选中项目后点击开始。"
 $body.Controls.Add($lblPhase)
@@ -961,7 +961,7 @@ $txtLog.Multiline = $true
 $txtLog.ReadOnly = $true
 $txtLog.ScrollBars = "Vertical"
 $txtLog.BorderStyle = "FixedSingle"
-$txtLog.BackColor = [System.Drawing.Color]::FromArgb(19, 22, 27)
+$txtLog.BackColor = [System.Drawing.Color]::FromArgb(18, 19, 20)
 $txtLog.ForeColor = [System.Drawing.Color]::FromArgb(220, 225, 232)
 $txtLog.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
 $txtLog.HideSelection = $false
@@ -970,7 +970,7 @@ $txtLog.BringToFront()
 
 $toastPanel = New-Object System.Windows.Forms.Panel
 $toastPanel.Size = New-Object System.Drawing.Size(260, 56)
-$toastPanel.BackColor = [System.Drawing.Color]::FromArgb(38, 44, 53)
+$toastPanel.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
 $toastPanel.BorderStyle = "FixedSingle"
 $toastPanel.Visible = $false
 $toastPanel.Anchor = "None"
@@ -1045,7 +1045,7 @@ $btnHelp.Add_Click({
     $helpForm.MinimizeBox = $false
     $helpForm.ShowInTaskbar = $false
     $helpForm.ClientSize = New-Object System.Drawing.Size(1040, 520)
-    $helpForm.BackColor = [System.Drawing.Color]::FromArgb(31, 36, 43)
+    $helpForm.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $helpForm.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
     $helpForm.Add_Shown({ Set-DarkTitleBar $helpForm })
     $helpRich = New-Object System.Windows.Forms.RichTextBox
@@ -1063,7 +1063,7 @@ $btnHelp.Add_Click({
     $helpClose.DialogResult = [System.Windows.Forms.DialogResult]::OK
     $helpClose.FlatStyle = "Flat"
     $helpClose.FlatAppearance.BorderSize = 0
-    $helpClose.BackColor = [System.Drawing.Color]::FromArgb(55, 62, 72)
+    $helpClose.BackColor = [System.Drawing.Color]::FromArgb(30, 31, 32)
     $helpClose.ForeColor = [System.Drawing.Color]::FromArgb(226, 231, 238)
     $helpForm.Controls.Add($helpClose)
     $helpForm.AcceptButton = $helpClose
