@@ -1141,7 +1141,7 @@ $btnWorkRoot.Add_Click({
     $workSettings.Controls.Add($browsePath)
 
     $pathHint = New-Object System.Windows.Forms.Label
-    $pathHint.Text = "目录下应包含账号文件夹及其 Cpp\Map 或 Cpp\AddOn 项目。"
+    $pathHint.Text = "工作目录只需包含 MCStudio 账号文件夹，项目会由软件自动查找。"
     $pathHint.Location = New-Object System.Drawing.Point(20, 82)
     $pathHint.Size = New-Object System.Drawing.Size(560, 22)
     $pathHint.ForeColor = [System.Drawing.Color]::FromArgb(100, 100, 100)
