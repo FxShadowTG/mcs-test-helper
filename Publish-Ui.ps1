@@ -472,6 +472,7 @@ function Set-ProjectColumnWidths {
 
 function Set-RunButtons([bool]$Running) {
     $script:Running = $Running
+    $bar.Visible = $Running
     $btnStart.Enabled = $true
     if ($Running) {
         $btnStart.Text = "■"
@@ -978,6 +979,7 @@ $runButtonTip.SetToolTip($btnStart, "开始任务")
 $bar = New-Object System.Windows.Forms.ProgressBar
 $bar.Location = New-Object System.Drawing.Point(54, 176)
 $bar.Size = New-Object System.Drawing.Size(240, 22)
+$bar.Visible = $false
 $bar.Anchor = "Top,Left"
 $bar.Minimum = 0
 $bar.Maximum = 100
