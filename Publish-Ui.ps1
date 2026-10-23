@@ -432,6 +432,19 @@ function Read-SharedText([string]$Path) {
     }
 }
 
+function Complete-RunLog([string]$Summary) {
+    $log = (Read-SharedText $script:LogPath).TrimEnd()
+    if ($log) { $log += [Environment]::NewLine }
+    $log += $Summary
+    try {
+        $utf8 = New-Object System.Text.UTF8Encoding $false
+        [System.IO.File]::AppendAllText($script:LogPath, $Summary + [Environment]::NewLine, $utf8)
+    } catch {}
+    $script:LastLog = $log
+    $txtLog.Text = $log
+    $txtLog.SelectionStart = $txtLog.TextLength
+    $txtLog.ScrollToCaret()
+}
 function Get-PhaseText([int]$Percent) {
     if ($Percent -ge 100) { return "完成" }
     if ($Percent -ge 90) {
@@ -612,8 +625,7 @@ function Stop-Run {
     $elapsed = Get-RunDuration
     Set-PhaseLabel $bar.Value "已停止" $true
     $bar.Value = 0
-    $script:LastLog = "已停止；本次耗时：$elapsed"
-    $txtLog.Text = $script:LastLog
+    Complete-RunLog "任务已停止；本次耗时：$elapsed"
     $script:RunStartedAt = $null
 }
 
@@ -689,14 +701,14 @@ function Sync-Progress {
             if (-not $detail) { $detail = "全部步骤已完成" }
             Set-PhaseLabel 100 $detail $false
             Show-CompletionNotification $true ("本次耗时：{0}；{1}" -f $elapsed, $detail)
-            $script:LastLog = "任务完成；本次耗时：$elapsed"
+            $summary = "任务完成；本次耗时：$elapsed"
         } else {
             if (-not $detail) { $detail = "失败，退出码 $code" }
             Set-PhaseLabel $pct $detail $true
             Show-CompletionNotification $false ("本次耗时：{0}；{1}" -f $elapsed, $detail)
-            $script:LastLog = "任务失败；本次耗时：$elapsed"
+            $summary = "任务失败；本次耗时：$elapsed"
         }
-        $txtLog.Text = $script:LastLog
+        Complete-RunLog $summary
         $script:RunStartedAt = $null
         $bar.Value = 0
     } elseif ($script:Running) {
@@ -1286,6 +1298,13 @@ $form.Add_Shown({
         $form.Tag = "{0}|{1}|{2}" -f $lv.Items.Count, $lv.Height, $txtLog.Height
         $form.Close()
         return
+    }
+    $previousLog = Read-SharedText $script:LogPath
+    if ($previousLog) {
+        $script:LastLog = $previousLog.TrimEnd()
+        $txtLog.Text = $script:LastLog
+        $txtLog.SelectionStart = $txtLog.TextLength
+        $txtLog.ScrollToCaret()
     }
     $script:ProjectIds = $cfg.ProjectIds
     $script:ProjectKeywords = $cfg.ProjectKeywords
