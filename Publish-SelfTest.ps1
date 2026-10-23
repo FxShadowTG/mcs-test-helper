@@ -1323,7 +1323,7 @@ function Invoke-UpgradeAndPublish([string]$MapTitle) {
     if (-not (Invoke-LauncherElement $upgrade "全部升级")) {
         throw "「全部升级」无法直接调用"
     }
-    if (-not $DryRun) { Start-Sleep -Milliseconds 700 }
+    if (-not $DryRun) { Start-Sleep -Milliseconds 250 }
     $published = $false
     $cfg = Get-ConfigElement
     if ($cfg) {
@@ -1339,7 +1339,7 @@ function Invoke-UpgradeAndPublish([string]$MapTitle) {
             if ($ok -and -not (Invoke-LauncherElement $ok "确定")) {
                 throw "「确定」无法直接调用"
             }
-            Start-Sleep -Milliseconds 450
+            Start-Sleep -Milliseconds 100
             $again = Wait-Until 10 {
                 foreach ($w in @(Get-TopWindows | Where-Object { $_.ProcessName -eq "MCStudio" -and $_.Width -gt 160 -and $_.Height -gt 80 })) {
                     $el = Get-Ui $w.Hwnd
@@ -1347,7 +1347,7 @@ function Invoke-UpgradeAndPublish([string]$MapTitle) {
                     if ($next) { return @{ Element = $next; Hwnd = $w.Hwnd } }
                 }
                 return $null
-            }
+            } 100
             if ($again -and -not (Invoke-LauncherElement $again.Element "再次确定")) {
                 throw "第二次「确定」无法直接调用"
             }
