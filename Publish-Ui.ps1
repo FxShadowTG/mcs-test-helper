@@ -1,4 +1,4 @@
-# 一键保存发布自测的窗口。选项目、改快捷键、看进度。实际步骤仍由 Publish-SelfTest.ps1 执行。
+﻿# 一键保存发布自测的窗口。选项目、改快捷键、看进度。实际步骤仍由 Publish-SelfTest.ps1 执行。
 param(
     [switch]$SelfTest,
     [switch]$NoConsole
