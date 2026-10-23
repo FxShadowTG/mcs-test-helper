@@ -51,6 +51,12 @@ if (-not $SelfTest) {
     $script:InstanceMutex = New-Object System.Threading.Mutex($true, "Local\MCStudio-OneClickPublish-UI", [ref]$createdNew)
     if (-not $createdNew) {
         $existingWindow = [UiDpi]::FindWindow($null, "MCSTestHelper")
+        [void][System.Windows.Forms.MessageBox]::Show(
+            "你已经启动了一个进程。",
+            "MCSTestHelper",
+            [System.Windows.Forms.MessageBoxButtons]::OK,
+            [System.Windows.Forms.MessageBoxIcon]::Information
+        )
         if ($existingWindow -ne [IntPtr]::Zero) {
             [void][UiDpi]::ShowWindow($existingWindow, 9)
             [void][UiDpi]::SetForegroundWindow($existingWindow)
