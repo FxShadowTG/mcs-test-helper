@@ -1126,7 +1126,7 @@ function Search-LauncherProject($Main, [string]$MapTitle, [string]$ProjectType) 
         $root = Get-Ui $Main.Hwnd
         if (-not $root) { return $null }
         return (Find-MapCard $root $MapTitle)
-    } 120
+    } 50
     if (-not $card) { throw "启动器首页开发动态里没有找到所选项目「$MapTitle」，已停止，没有选择其他项目。" }
     Log ("已在启动器首页开发动态中找到「{0}」" -f $MapTitle)
     return $card
