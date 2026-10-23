@@ -1,4 +1,4 @@
-﻿# 一键保存发布自测的窗口。选项目、改快捷键、看进度。实际步骤仍由 Publish-SelfTest.ps1 执行。
+# 一键保存发布自测的窗口。选项目、改快捷键、看进度。实际步骤仍由 Publish-SelfTest.ps1 执行。
 param(
     [switch]$SelfTest,
     [switch]$NoConsole
@@ -444,11 +444,24 @@ function Update-ProjectList([string]$PreferName, [string]$PreferType = "map") {
         $select.EnsureVisible()
     }
     $lv.EndUpdate()
-    $lv.Columns[3].Width = -2
+    Set-ProjectColumnWidths
     $script:SuppressSave = $false
     if ($lv.Items.Count -eq 0) {
         $lblPhase.Text = "项目目录里没有 addon 或 map"
     }
+}
+
+function Set-ProjectColumnWidths {
+    if (-not $lv -or $lv.Columns.Count -lt 4) { return }
+    $categoryWidth = 100
+    $boundIdWidth = 300
+    $recentWidth = 190
+    $scrollbarWidth = [System.Windows.Forms.SystemInformation]::VerticalScrollBarWidth
+    $nameWidth = [Math]::Max(260, $lv.ClientSize.Width - $categoryWidth - $boundIdWidth - $recentWidth - $scrollbarWidth - 4)
+    $lv.Columns[0].Width = $nameWidth
+    $lv.Columns[1].Width = $categoryWidth
+    $lv.Columns[2].Width = $boundIdWidth
+    $lv.Columns[3].Width = $recentWidth
 }
 
 function Set-RunButtons([bool]$Running) {
@@ -799,9 +812,9 @@ $lv.Anchor = "Top,Left,Right"
 $lv.Location = New-Object System.Drawing.Point(0, 28)
 $lv.Size = New-Object System.Drawing.Size(670, 125)
 [void]$lv.Columns.Add("项目", 300)
-[void]$lv.Columns.Add("分类", 60)
+[void]$lv.Columns.Add("分类", 100)
 [void]$lv.Columns.Add("绑定46ID", 300)
-[void]$lv.Columns.Add("最近保存", 145)
+[void]$lv.Columns.Add("最近保存", 190)
 
 $top.Controls.Add($lv)
 $lv.Add_DrawColumnHeader({
@@ -1214,6 +1227,7 @@ $form.Add_Shown({
     $btnRefresh.Left = $top.ClientSize.Width - $btnRefresh.Width
     $btnProjectSettings.Left = $btnRefresh.Left - $btnProjectSettings.Width - 6
     $lv.Width = [Math]::Max(420, $top.ClientSize.Width - $lv.Left - 8)
+    Set-ProjectColumnWidths
     $bar.Width = 240
     if ($SelfTest) {
         $script:SuppressSave = $true
@@ -1231,6 +1245,7 @@ $top.Add_Resize({
     $btnRefresh.Left = $top.ClientSize.Width - $btnRefresh.Width
     $btnProjectSettings.Left = $btnRefresh.Left - $btnProjectSettings.Width - 6
     $lv.Width = [Math]::Max(420, $top.ClientSize.Width - $lv.Left - 8)
+    Set-ProjectColumnWidths
     $bar.Width = 240
 })
 
