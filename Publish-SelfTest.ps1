@@ -1926,7 +1926,7 @@ function Invoke-WebSaveAndSelfTest {
             if (-not $resourceUploadWarningSeen) {
                 Log "检测到「资源包未上传，请重新提交」提示；等待提示消失后重新提交保存"
                 $resourceUploadWarningSeen = $true
-                $deadline = (Get-Date).AddMinutes(15)
+                $deadline = (Get-Date).AddMinutes(1)
             }
             $idleSince = $null
             Start-Sleep -Milliseconds 500
