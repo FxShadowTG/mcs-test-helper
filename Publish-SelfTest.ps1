@@ -1909,6 +1909,7 @@ function Invoke-WebSaveAndSelfTest {
     $idleSince = $null
     $lastSig = $null
     $loggedBusy = $false
+    $resourceUploadWarningSeen = $false
     $recoveryCount = 0
     $lastSaveClickAt = $null
     $deadline = (Get-Date).AddMinutes(5)
@@ -1919,6 +1920,17 @@ function Invoke-WebSaveAndSelfTest {
         }
         if (Find-PageContains $page.Window.Hwnd "模组/游戏正在审核") {
             throw "检测到「模组/游戏正在审核」警告，按要求停止本次程序；未继续保存。"
+        }
+        $resourceUploadWarning = Find-PageContains $page.Window.Hwnd "资源包未上传"
+        if ($resourceUploadWarning) {
+            if (-not $resourceUploadWarningSeen) {
+                Log "检测到「资源包未上传，请重新提交」提示；等待提示消失后重新提交保存"
+                $resourceUploadWarningSeen = $true
+                $deadline = (Get-Date).AddMinutes(15)
+            }
+            $idleSince = $null
+            Start-Sleep -Milliseconds 500
+            continue
         }
         if (Find-PageContains $page.Window.Hwnd "保存成功") { $saved = $true; break }
         $busy = Test-PageContentBusy $page.Window.Hwnd
@@ -1949,13 +1961,13 @@ function Invoke-WebSaveAndSelfTest {
             continue
         }
         if (-not $allowClick -and $lastSaveClickAt -and (((Get-Date) - $lastSaveClickAt).TotalSeconds -ge 8)) {
-            if ($clicks -ge 3) { throw "保存按钮调用 3 次后仍没有成功或处理中反馈，已停止。" }
+            if ($clicks -ge 3 -and -not $resourceUploadWarningSeen) { throw "保存按钮调用 3 次后仍没有成功或处理中反馈，已停止。" }
             Log ("调用保存后 8 秒没有反馈，第 {0} 次重试；重新滚到页面顶部" -f ($clicks + 1))
             $allowClick = $true
             $idleSince = $null
             continue
         }
-        if (-not $allowClick -or $clicks -ge 3) {
+        if (-not $allowClick -or ($clicks -ge 3 -and -not $resourceUploadWarningSeen)) {
             Start-Sleep -Milliseconds 300
             continue
         }
