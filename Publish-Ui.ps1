@@ -107,6 +107,8 @@ $script:Running = $false
 $script:RunStartedAt = $null
 $script:ProjectIds = @{}
 $script:ProjectKeywords = @{}
+$script:ProjectModes = @{}
+$script:RunSelfTestMode = "free"
 
 function Show-ProjectSettings {
     if ($lv.SelectedItems.Count -lt 1) {
@@ -124,7 +126,7 @@ function Show-ProjectSettings {
     $settings.MaximizeBox = $false
     $settings.MinimizeBox = $false
     $settings.ShowInTaskbar = $false
-    $settings.ClientSize = New-Object System.Drawing.Size(460, 280)
+    $settings.ClientSize = New-Object System.Drawing.Size(460, 340)
     $settings.BackColor = [System.Drawing.Color]::White
     $settings.ForeColor = [System.Drawing.Color]::FromArgb(32, 32, 32)
     $settings.Add_Shown({ Set-DarkTitleBar $settings })
@@ -197,9 +199,27 @@ function Show-ProjectSettings {
     $clearTip.SetToolTip($clearKeyword, "清除关键词")
     $keywordPanel.Controls.Add($clearKeyword)
     [void][UiDpi]::SendMessage($keywordBox.Handle, 0x1501, [IntPtr]1, "发布匹配关键词（留空时使用项目名）")
+    $modeLabel = New-Object System.Windows.Forms.Label
+    $modeLabel.Text = "自测方式"
+    $modeLabel.Location = New-Object System.Drawing.Point(18, 174)
+    $modeLabel.Size = New-Object System.Drawing.Size(100, 22)
+    $settings.Controls.Add($modeLabel)
+    $mode = Get-SelectedSelfTestMode
+    $radioNoReview = New-Object System.Windows.Forms.RadioButton
+    $radioNoReview.Text = "免机审自测"
+    $radioNoReview.Location = New-Object System.Drawing.Point(22, 201)
+    $radioNoReview.Size = New-Object System.Drawing.Size(130, 24)
+    $radioNoReview.Checked = ($mode -ne "review")
+    $settings.Controls.Add($radioNoReview)
+    $radioReview = New-Object System.Windows.Forms.RadioButton
+    $radioReview.Text = "机审自测"
+    $radioReview.Location = New-Object System.Drawing.Point(170, 201)
+    $radioReview.Size = New-Object System.Drawing.Size(130, 24)
+    $radioReview.Checked = ($mode -eq "review")
+    $settings.Controls.Add($radioReview)
     $save = New-Object System.Windows.Forms.Button
     $save.Text = "保存"
-    $save.Location = New-Object System.Drawing.Point(270, 230)
+    $save.Location = New-Object System.Drawing.Point(270, 282)
     $save.Size = New-Object System.Drawing.Size(80, 30)
     $save.FlatStyle = "Flat"
     $save.FlatAppearance.BorderSize = 0
@@ -216,6 +236,7 @@ function Show-ProjectSettings {
         if ($id -or $projectCategory -eq "map") { $script:ProjectIds.Remove($legacyKey) | Out-Null }
         $keyword = $keywordBox.Text.Trim()
         if ($keyword) { $script:ProjectKeywords[$key] = $keyword } else { $script:ProjectKeywords.Remove($key) | Out-Null }
+        $script:ProjectModes[$key] = if ($radioReview.Checked) { "review" } else { "free" }
         $selected.SubItems[2].Text = $id
         Save-UiConfig
         Set-PhaseLabel 0 "已保存「$projectName」的项目设置" $false
@@ -225,7 +246,7 @@ function Show-ProjectSettings {
     $settings.Controls.Add($save)
     $cancel = New-Object System.Windows.Forms.Button
     $cancel.Text = "取消"
-    $cancel.Location = New-Object System.Drawing.Point(360, 230)
+    $cancel.Location = New-Object System.Drawing.Point(360, 282)
     $cancel.Size = New-Object System.Drawing.Size(82, 30)
     $cancel.FlatStyle = "Flat"
     $cancel.FlatAppearance.BorderSize = 0
@@ -273,6 +294,7 @@ function Read-UiConfig {
         WorkRoot = $script:WorkRoot
         ProjectIds = @{}
         ProjectKeywords = @{}
+        ProjectModes = @{}
     }
     if (-not (Test-Path $script:ConfigPath)) { return $cfg }
     try {
@@ -290,6 +312,12 @@ function Read-UiConfig {
             foreach ($prop in $json.ProjectKeywords.PSObject.Properties) {
                 $value = ([string]$prop.Value).Trim()
                 if ($value) { $cfg.ProjectKeywords[$prop.Name] = $value }
+            }
+        }
+        if ($json.ProjectModes) {
+            foreach ($prop in $json.ProjectModes.PSObject.Properties) {
+                $value = [string]$prop.Value
+                if ($value -in @("free", "review")) { $cfg.ProjectModes[$prop.Name] = $value }
             }
         }
         if ($json.ProjectIds) {
@@ -324,6 +352,14 @@ function Get-SelectedPublishKeyword {
     return [string]$script:ProjectKeywords[$key]
 }
 
+function Get-SelectedSelfTestMode {
+    $key = Get-SelectedProjectKey
+    if (-not $key) { return "free" }
+    $mode = [string]$script:ProjectModes[$key]
+    if ($mode -notin @("free", "review")) { return "free" }
+    return $mode
+}
+
 function Save-UiConfig {
     if ($script:SuppressSave) { return }
     $cfg = [ordered]@{
@@ -336,6 +372,7 @@ function Save-UiConfig {
         Key = [string]$cmbKey.SelectedItem
         ProjectIds = $script:ProjectIds
         ProjectKeywords = $script:ProjectKeywords
+        ProjectModes = $script:ProjectModes
         WorkRoot = $script:WorkRoot
     }
     if ($lv.SelectedItems.Count -gt 0) {
@@ -397,7 +434,10 @@ function Read-SharedText([string]$Path) {
 
 function Get-PhaseText([int]$Percent) {
     if ($Percent -ge 100) { return "完成" }
-    if ($Percent -ge 90) { return "5/5  免机审自测" }
+    if ($Percent -ge 90) {
+        $modeLabel = if ($script:RunSelfTestMode -eq "review") { "机审自测" } else { "免机审自测" }
+        return "5/5  $modeLabel"
+    }
     if ($Percent -ge 78) { return "4/5  网页保存" }
     if ($Percent -ge 62) { return "3/5  发布作品" }
     if ($Percent -ge 26) { return "2/5  启动器配置" }
@@ -517,6 +557,8 @@ function Start-Run {
         return
     }
     $publishKeyword = Get-SelectedPublishKeyword
+    $selfTestMode = Get-SelectedSelfTestMode
+    $script:RunSelfTestMode = $selfTestMode
     Save-UiConfig
     $utf8 = New-Object System.Text.UTF8Encoding $false
     [System.IO.File]::WriteAllText($script:ProgressPath, "2|正在启动", $utf8)
@@ -546,6 +588,7 @@ function Start-Run {
     ) -join " "
     if ($boundId) { $argText += " -BoundItemId " + (ConvertTo-CmdArg $boundId) }
     if ($publishKeyword) { $argText += " -PublishKeyword " + (ConvertTo-CmdArg $publishKeyword) }
+    $argText += " -SelfTestMode " + (ConvertTo-CmdArg $selfTestMode)
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.FileName = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
     $psi.Arguments = $argText
@@ -1097,7 +1140,7 @@ $btnHelp.Add_Click({
     $helpRich.ReadOnly = $true
     $helpRich.BorderStyle = "None"
     $helpRich.BackColor = $helpForm.BackColor
-    $helpRich.Rtf = '{\rtf1\ansi\deff0{\fonttbl{\f0\fnil Microsoft YaHei UI;}{\f1\fnil Segoe UI Symbol;}}{\colortbl ;\red32\green150\blue96;\red196\green64\blue58;\red32\green32\blue32;}\viewkind4\uc1\pard\f0\fs28\b\cf3 我的世界MCStudio自测助手\b0\fs20\par\par 本软件用于自动保存、发布 MCStudio 项目并发起自测。\par\par 选中项目并绑定 46 开头的作品 ID 后，点击 \f1\b\cf1 \u9654? \f0\b0\cf3 开始任务；运行时点击 \f1\b\cf2 \u9632? \f0\b0\cf3 停止任务。\par\par 项目设置中的发布匹配关键词用于在发布作品列表里匹配实际作品名称。当启动器项目名和作品资源名不同时，填写能搜到该作品的关键词；留空时使用项目名。\par\par 点击键盘图标可设置快捷键。\par\par 点击设置图标可配置 MCStudio 工作目录。\par\par 作者：FxShadow\par}'
+    $helpRich.Rtf = '{\rtf1\ansi\deff0{\fonttbl{\f0\fnil Microsoft YaHei UI;}{\f1\fnil Segoe UI Symbol;}}{\colortbl ;\red32\green150\blue96;\red196\green64\blue58;\red32\green32\blue32;}\viewkind4\uc1\pard\f0\fs28\b\cf3 我的世界MCStudio自测助手\b0\fs20\par\par 本软件用于自动保存、发布 MCStudio 项目并发起自测。\par\par 选中项目并绑定 46 开头的作品 ID 后，点击 \f1\b\cf1 \u9654? \f0\b0\cf3 开始任务；运行时点击 \f1\b\cf2 \u9632? \f0\b0\cf3 停止任务。\par\par 项目设置可选择“免机审自测”或“机审自测”。\par\par 项目设置中的发布匹配关键词用于在发布作品列表里匹配实际作品名称。当启动器项目名和作品资源名不同时，填写能搜到该作品的关键词；留空时使用项目名。\par\par 点击键盘图标可设置快捷键。\par\par 点击设置图标可配置 MCStudio 工作目录。\par\par 作者：FxShadow\par}'
     $helpForm.Controls.Add($helpRich)
     $helpClose = New-Object System.Windows.Forms.Button
     $helpClose.Text = "关闭"
@@ -1246,6 +1289,7 @@ $form.Add_Shown({
     }
     $script:ProjectIds = $cfg.ProjectIds
     $script:ProjectKeywords = $cfg.ProjectKeywords
+    $script:ProjectModes = $cfg.ProjectModes
     Update-ProjectList $cfg.MapName $cfg.ProjectType
     [void](Update-Hotkey)
 })

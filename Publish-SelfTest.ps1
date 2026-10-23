@@ -3,6 +3,8 @@
     [string]$ProjectType = "map",
     [string]$BoundItemId = "",
     [string]$PublishKeyword = "",
+    [ValidateSet("free", "review")]
+    [string]$SelfTestMode = "free",
     [string]$WorkRoot = "D:\MCStudioDownload\work",
     [string]$ProgressFile = "",
     [switch]$DryRun,
@@ -22,6 +24,7 @@ if ([Threading.Thread]::CurrentThread.GetApartmentState() -ne "STA") {
     if ($ProjectType) { $argList += @("-ProjectType", $ProjectType) }
     if ($BoundItemId) { $argList += @("-BoundItemId", $BoundItemId) }
     if ($PublishKeyword) { $argList += @("-PublishKeyword", $PublishKeyword) }
+    if ($SelfTestMode) { $argList += @("-SelfTestMode", $SelfTestMode) }
     if ($WorkRoot) { $argList += @("-WorkRoot", $WorkRoot) }
     if ($ProgressFile) { $argList += @("-ProgressFile", $ProgressFile) }
     if ($DryRun) { $argList += "-DryRun" }
@@ -1657,12 +1660,12 @@ function Find-RowDots([IntPtr]$Hwnd, $Row) {
     return $best
 }
 
-function Find-SelfTestButtonAnywhere([IntPtr]$Hwnd) {
-    $hit = Find-SelfTestButton $Hwnd
+function Find-SelfTestButtonAnywhere([IntPtr]$Hwnd, [string]$ModeLabel = "免机审自测") {
+    $hit = Find-SelfTestButton $Hwnd $ModeLabel
     if ($hit) { return $hit }
     foreach ($w in @(Get-TopWindows | Where-Object { $_.ProcessName -eq "msedge" })) {
         if ([int64]$w.Hwnd -eq [int64]$Hwnd) { continue }
-        $hit = Find-SelfTestButton $w.Hwnd
+        $hit = Find-SelfTestButton $w.Hwnd $ModeLabel
         if ($hit) { return $hit }
     }
     return $null
@@ -1720,6 +1723,7 @@ function Open-RowMenu([IntPtr]$Hwnd, $MoreButton, [string]$ExpectedLabel = '') {
         $y = [int][Math]::Round($br.Y + ($br.Height / 2))
         Log ("前台移动鼠标到更多按钮 {0},{1}" -f $x, $y)
         Move-MouseSmooth $x $y
+        $menuSelfTestLabel = if ($ExpectedLabel -in @("免机审自测", "机审自测")) { $ExpectedLabel } else { "免机审自测" }
         $hovered = Wait-Until 2 {
             if ($ExpectedLabel) {
                 $hit = Find-NamedPageButton $Hwnd $ExpectedLabel
@@ -1727,7 +1731,7 @@ function Open-RowMenu([IntPtr]$Hwnd, $MoreButton, [string]$ExpectedLabel = '') {
             }
             $hit = Find-NamedPageButton $Hwnd '取消自测'
             if ($hit) { return $hit }
-            return (Find-SelfTestButtonAnywhere $Hwnd)
+            return (Find-SelfTestButtonAnywhere $Hwnd $menuSelfTestLabel)
         }
         if ($hovered) { return }
     }
@@ -1772,7 +1776,9 @@ function Submit-ListSearch([IntPtr]$Hwnd, [string]$Query) {
 function Invoke-SelfTestOnPage($Page, [string]$MapTitle, [string]$ItemId) {
     $resourceQuery = [string]$PublishKeyword
     if ([string]::IsNullOrWhiteSpace($resourceQuery)) { $resourceQuery = $MapTitle }
-    Set-Step 90 "返回列表，由页面自己提交免机审"
+    $selfTestLabel = if ($SelfTestMode -eq "review") { "机审自测" } else { "免机审自测" }
+    $confirmNeedles = if ($SelfTestMode -eq "review") { @("机审自测", "提交审核") } else { @("提交到自测环境") }
+    Set-Step 90 "返回列表，由页面自己提交$selfTestLabel"
     Set-FocusGuardPause $true
     Show-Target $Page.Window.Hwnd
     $back = Find-DomButton $Page.Window.Hwnd "返回" "MC_Style_Grey_2"
@@ -1854,18 +1860,24 @@ function Invoke-SelfTestOnPage($Page, [string]$MapTitle, [string]$ItemId) {
         $more = Find-RowMoreButton $Page.Window.Hwnd $row.Element
         if (-not $more) { throw "取消自测后没有找到 ... 按钮。" }
     }
-    $selfTest = Find-SelfTestButtonAnywhere $Page.Window.Hwnd
+    $selfTest = Find-SelfTestButtonAnywhere $Page.Window.Hwnd $selfTestLabel
     if (-not $selfTest) {
-        Log "前台悬停更多按钮，再查找免机审自测"
-        Open-RowMenu $Page.Window.Hwnd $more "免机审自测"
-        $selfTest = Wait-Until 5 { return (Find-SelfTestButtonAnywhere $Page.Window.Hwnd) }
+        Log "前台悬停更多按钮，再查找$selfTestLabel"
+        Open-RowMenu $Page.Window.Hwnd $more $selfTestLabel
+        $selfTest = Wait-Until 5 { return (Find-SelfTestButtonAnywhere $Page.Window.Hwnd $selfTestLabel) }
     }
-    if (-not $selfTest) { throw "菜单没有展开，「免机审自测」仍不在页面上。" }
-    if (-not (Invoke-PageButton $selfTest "免机审自测" -InvokeOnly -KeepFocus)) { throw "「免机审自测」无法直接调用" }
-    $confirm = Wait-Until 10 { return (Find-SelfTestConfirm $Page.Window.Hwnd) }
-    if (-not $confirm) { throw "没有出现「提交到自测环境」确认框。" }
+    if (-not $selfTest) { throw "菜单没有展开，「$selfTestLabel」仍不在页面上。" }
+    if (-not (Invoke-PageButton $selfTest $selfTestLabel -InvokeOnly -KeepFocus)) { throw "「$selfTestLabel」无法直接调用" }
+    $confirm = Wait-Until 10 {
+        foreach ($needle in $confirmNeedles) {
+            $found = Find-SelfTestConfirm $Page.Window.Hwnd $needle
+            if ($found) { return $found }
+        }
+        return $null
+    }
+    if (-not $confirm) { throw "没有出现「$selfTestLabel」确认框。" }
     if (-not (Invoke-PageButton $confirm "确定" -InvokeOnly -KeepFocus)) { throw "确认框里的「确定」无法直接调用" }
-    Set-Step 98 "免机审自测已提交"
+    Set-Step 98 "$selfTestLabel 已提交"
     Set-FocusGuardPause $false
 }
 
@@ -2086,7 +2098,7 @@ function Find-RowMoreButton([IntPtr]$Hwnd, $Row) {
     return $best
 }
 
-function Find-SelfTestButton([IntPtr]$Hwnd) {
+function Find-SelfTestButton([IntPtr]$Hwnd, [string]$ModeLabel = "免机审自测") {
     $root = Get-Ui $Hwnd
     if (-not $root) { return $null }
     $walker = [System.Windows.Automation.TreeWalker]::ControlViewWalker
@@ -2103,7 +2115,10 @@ function Find-SelfTestButton([IntPtr]$Hwnd) {
             $name = ([string]$el.Current.Name).Trim()
             $cls = [string]$el.Current.ClassName
         } catch { continue }
-        if ($name.Contains("免机审自测")) {
+        $isMatch = $false
+        if ($ModeLabel -eq "机审自测") { $isMatch = ($name -match "(?<!免)机审自测") }
+        else { $isMatch = $name.Contains("免机审自测") }
+        if ($isMatch) {
             if ($cls.Contains("MC_Style_Grey_2")) { return $el }
             if (-not $fallback) { $fallback = $el }
         }
