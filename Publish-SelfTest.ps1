@@ -1266,17 +1266,17 @@ function Close-MapEditor {
     Log "等待编辑器退出（大地图保存可能要几分钟）"
     $script:SaveAttempts = 6
     $script:NextSaveScan = [datetime]::MinValue
-    $gone = Wait-Until 300 {
+    $gone = Wait-Until 600 {
         if (-not (Get-Process -Name "MC_Editor" -ErrorAction SilentlyContinue)) { return $true }
         if ($script:SaveAttempts -gt 0 -and (Get-Date) -gt $script:NextSaveScan) {
             $script:SaveAttempts--
-            $script:NextSaveScan = (Get-Date).AddSeconds(3)
+            $script:NextSaveScan = (Get-Date).AddMilliseconds(1500)
             $point = Find-SaveButtonPoint
             if ($point) { Click-Screen $point.X $point.Y "保存" }
         }
         return $null
     }
-    if (-not $gone) { throw "编辑器 5 分钟内没有退出。请看编辑器上是否还有没点掉的对话框。" }
+    if (-not $gone) { throw "编辑器 10 分钟内没有退出。请看编辑器上是否还有没点掉的对话框。" }
     Set-Step 22 "编辑器已退出"
     Start-Sleep -Seconds 2
 }
