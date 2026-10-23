@@ -207,13 +207,13 @@ function Show-ProjectSettings {
     $mode = Get-SelectedSelfTestMode
     $radioNoReview = New-Object System.Windows.Forms.RadioButton
     $radioNoReview.Text = "免机审自测"
-    $radioNoReview.Location = New-Object System.Drawing.Point(22, 201)
+    $radioNoReview.Location = New-Object System.Drawing.Point(170, 201)
     $radioNoReview.Size = New-Object System.Drawing.Size(130, 24)
     $radioNoReview.Checked = ($mode -eq "free")
     $settings.Controls.Add($radioNoReview)
     $radioReview = New-Object System.Windows.Forms.RadioButton
     $radioReview.Text = "机审自测"
-    $radioReview.Location = New-Object System.Drawing.Point(170, 201)
+    $radioReview.Location = New-Object System.Drawing.Point(22, 201)
     $radioReview.Size = New-Object System.Drawing.Size(130, 24)
     $radioReview.Checked = ($mode -eq "review")
     $settings.Controls.Add($radioReview)
