@@ -108,7 +108,7 @@ $script:RunStartedAt = $null
 $script:ProjectIds = @{}
 $script:ProjectKeywords = @{}
 $script:ProjectModes = @{}
-$script:RunSelfTestMode = "free"
+$script:RunSelfTestMode = "review"
 
 function Show-ProjectSettings {
     if ($lv.SelectedItems.Count -lt 1) {
@@ -209,7 +209,7 @@ function Show-ProjectSettings {
     $radioNoReview.Text = "免机审自测"
     $radioNoReview.Location = New-Object System.Drawing.Point(22, 201)
     $radioNoReview.Size = New-Object System.Drawing.Size(130, 24)
-    $radioNoReview.Checked = ($mode -ne "review")
+    $radioNoReview.Checked = ($mode -eq "free")
     $settings.Controls.Add($radioNoReview)
     $radioReview = New-Object System.Windows.Forms.RadioButton
     $radioReview.Text = "机审自测"
@@ -354,9 +354,9 @@ function Get-SelectedPublishKeyword {
 
 function Get-SelectedSelfTestMode {
     $key = Get-SelectedProjectKey
-    if (-not $key) { return "free" }
+    if (-not $key) { return "review" }
     $mode = [string]$script:ProjectModes[$key]
-    if ($mode -notin @("free", "review")) { return "free" }
+    if ($mode -notin @("free", "review")) { return "review" }
     return $mode
 }
 
