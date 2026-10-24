@@ -1792,12 +1792,20 @@ function Invoke-SelfTestOnPage($Page, [string]$MapTitle, [string]$ItemId) {
         }
         if (-not $row) {
             Log "当前列表没看到绑定的 46 ID，使用名称/ID 搜索框查询"
-            Submit-ListSearch $Page.Window.Hwnd $BoundItemId
-            Log "等待绑定 ID 搜索结果"
-            $row = Wait-Until 8 {
-                return (Find-ListRow $Page.Window.Hwnd "" $BoundItemId)
-            } 150
-            if (-not $row) { throw "按 46 ID $BoundItemId 搜索后，列表仍没有这项作品；已停止。" }
+            $row = $null
+            for ($attempt = 1; $attempt -le 4; $attempt++) {
+                if ($attempt -gt 1) {
+                    Log ("绑定 ID 搜索无结果，滚动列表到最上方后重试 {0}/3" -f ($attempt - 1))
+                    Scroll-BrowserToTop $Page.Window.Hwnd
+                }
+                Submit-ListSearch $Page.Window.Hwnd $BoundItemId
+                Log ("等待绑定 ID 搜索结果（第 {0}/4 次）" -f $attempt)
+                $row = Wait-Until 8 {
+                    return (Find-ListRow $Page.Window.Hwnd "" $BoundItemId)
+                } 150
+                if ($row) { break }
+            }
+            if (-not $row) { throw "按 46 ID $BoundItemId 搜索 4 次（含初次、重试 3 次）后，列表仍没有这项作品；已停止。" }
             if (-not $row.Text.Contains($resourceQuery)) {
                 throw "搜索到 46 ID $BoundItemId，但作品名不匹配当前项目「$resourceQuery」：$($row.Text)"
             }
